@@ -1,5 +1,6 @@
 '''
 Test python sketch for Adafruit USB+Serial LCD backpack
+---> http://www.adafruit.com/category/63_96
 
 Adafruit invests time and resources providing this open source code, 
 please support Adafruit and open-source hardware by purchasing 
