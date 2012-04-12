@@ -1,9 +1,27 @@
+'''
+Test python sketch for Adafruit USB+Serial LCD backpack
+
+Adafruit invests time and resources providing this open source code, 
+please support Adafruit and open-source hardware by purchasing 
+products from Adafruit!
+
+Written by Limor Fried/Ladyada  for Adafruit Industries.  
+BSD license, check license.txt for more information
+All text above must be included in any redistribution
+'''
+
+
 import serial
 import sys
 import time
 
-# matrix orbital example test
+# 20x4 LCD
+#ROWS = 4
+#COLS = 20
 
+# 16x2 LCD:
+ROWS = 2
+COLS = 16
 
 def matrixwritecommand(commandlist):
     commandlist.insert(0, 0xFE)
@@ -44,6 +62,9 @@ time.sleep(2);
 ser = serial.Serial(sys.argv[1], 9600, timeout=1)
 matrixwritecommand([0x58]) 
 
+# set size
+matrixwritecommand([0xD1, COLS, ROWS]);
+matrixwritecommand([0x58]) 
 
 # turn on display
 ser.write("Display on");
@@ -51,11 +72,31 @@ matrixwritecommand([0x42, 0])
 time.sleep(0.3);
 
 # contrast loop
-#for i in range(0, 256):
-    #matrixwritecommand([0x50, i]) 
+for i in range(0, 256):
+    matrixwritecommand([0x50, i]) 
 #time.sleep(0.1);
 
-matrixwritecommand([0x50, 80]) 
+matrixwritecommand([0x50, 220])
+
+
+# turn GPIO's on
+matrixwritecommand([0x57, 1])
+time.sleep(0.1)
+matrixwritecommand([0x57, 2])
+time.sleep(0.1)
+matrixwritecommand([0x57, 3])
+time.sleep(0.1)
+matrixwritecommand([0x57, 4])
+time.sleep(0.1)
+# turn GPIO's off
+matrixwritecommand([0x56, 1])
+time.sleep(0.1)
+matrixwritecommand([0x56, 2])
+time.sleep(0.1)
+matrixwritecommand([0x56, 3])
+time.sleep(0.1)
+matrixwritecommand([0x56, 4])
+time.sleep(0.1)
 
 # turn off display
 ser.write("off");
@@ -149,7 +190,7 @@ ser.write(chr(6))
 ser.write(chr(7))
 time.sleep(1)
 
-'''
+
 matrixwritecommand([0x58]) 
 # create medium numbers in bank #3
 matrixwritecommand([0xC1, 3, 0, 0x1f,0x1f,0x03,0x03,0x03,0x03,0x03,0x03])
@@ -179,29 +220,41 @@ matrixwritecommand([0x6F, 2, 0, 1])
 matrixwritecommand([0x6F, 4, 0, 2])
 matrixwritecommand([0x6F, 6, 0, 3])
 time.sleep(1)
-'''
 
 # autoscroll on
 matrixwritecommand([0x58]) 
-matrixwritecommand([0x51]) 
-ser.write("long long long text that scrolls the display ");
-time.sleep(1);
+matrixwritecommand([0x51])
+if (ROWS == 4):
+    ser.write("Here is a long long long line of text   ");
+    time.sleep(1)
+    ser.write("Adding more text... ");
+    time.sleep(1)
+    ser.write("even more text now!");
+    time.sleep(1)
+    ser.write(" which will scroll");
+if (ROWS == 2):
+    ser.write("Here's some text");
+    time.sleep(1)
+    ser.write("Add some more..");
+    time.sleep(1)
+    ser.write(" which'll scroll");
+time.sleep(1)
 
 # autoscroll off
 matrixwritecommand([0x58]) 
 matrixwritecommand([0x52]) 
-ser.write("long long long text that ends @ top left   ");
+ser.write("long long long text that ends @ top left    ");
 time.sleep(1);
 
 # cursor test
 matrixwritecommand([0x58]) 
 matrixwritecommand([0x47,1,1]) 
 ser.write('1');
-matrixwritecommand([0x47,16,1]) 
+matrixwritecommand([0x47,COLS,1]) 
 ser.write('2');
-matrixwritecommand([0x47,1,2]) 
+matrixwritecommand([0x47,1,ROWS]) 
 ser.write('3');
-matrixwritecommand([0x47,16,2]) 
+matrixwritecommand([0x47,COLS,ROWS]) 
 ser.write('4');
 
 #underline cursor on
@@ -279,8 +332,8 @@ ser.close();
 ser = serial.Serial(sys.argv[1], 9600, timeout=1)
 
 # Splashscreen change
-#matrixwritecommand([0x40, 'H','e','l','l','o',' ','W','o','r','l','d','!',' ',' ',' ',' ','T','e','s','t','i','n','g',' ','1','6','x','2',' ','L','C','D'])
+matrixwritecommand([0x40, ord('H'),ord('e'),ord('l'),ord('l'),ord('o'),ord(' '),ord('W'),ord('o'),ord('r'),ord('l'),ord('d'),ord('!'),ord(' '),ord(' '),ord(' '),ord(' '),ord('T'),ord('e'),ord('s'),ord('t'),ord('i'),ord('n'),ord('g'),ord(' '),ord('1'),ord('6'),ord('x'),ord('2'),ord(' '),ord('L'),ord('C'),ord('D')])
 
-#matrixwritecommand([0x40, ' ',' ','A','d','a','f','r','u','i','t','.','c','o','m',' ',' ','1','6','x','2',' ','U','S','B','+','S','e','r',' ','L','C','D']) 
+#matrixwritecommand([0x40, ord(' '),ord(' '),ord('A'),ord('d'),ord('a'),ord('f'),ord('r'),ord('u'),ord('i'),ord('t'),ord('.'),ord('c'),ord('o'),ord('m'),ord(' '),ord(' '),ord('1'),ord('6'),ord('x'),ord('2'),ord(' '),ord('U'),ord('S'),ord('B'),ord('+'),ord('S'),ord('e'),ord('r'),ord(' '),ord('L'),ord('C'),ord('D')]) 
 exit()
 
