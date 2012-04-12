@@ -1,5 +1,6 @@
 /***********************************
 Matrix-orbitalish compatible LCD driver with USB and Serial 
+For use with Teensy 1.0 core on AT90USB162 chips
 
 Adafruit invests time and resources providing this open source code, 
 please support Adafruit and open-source hardware by purchasing 
