@@ -38,7 +38,7 @@ All text above must be included in any redistribution
 LiquidCrystal lcd(RS, RW, EN, D4, D5, D6, D7);
 
 // This line defines a "Uart" object to access the serial port
-HardwareSerial Uart = HardwareSerial();
+HardwareSerial &Uart = Serial1;
 
 // connect these to the analog output (PWM) pins!
 #define REDLITE 0              // D0
@@ -56,50 +56,55 @@ uint8_t GPO[] = {GPO_1, GPO_2, GPO_3, GPO_4};
 //http://www.matrixorbital.ca/manuals/LCDVFD_Series/LCD2041/LCD2041.pdf
 
 /******** Communication commands */
-//#define MATRIX_I2CADDR 0x33      // not supported
-#define MATRIX_BAUDRATE 0x39       // 1 arg
-//#define MATRIX_BAUDRATE2 0xA4      // not supported
+enum Command {
+  //MATRIX_I2CADDR = 0x33, // not supported
+  MATRIX_BAUDRATE = 0x39, // 1 arg
+  //MATRIX_BAUDRATE2 = 0xA4, // not supported
 
-/******** text commands */
-#define MATRIX_AUTOSCROLL_ON 0x51
-#define MATRIX_AUTOSCROLL_OFF 0x52
-#define MATRIX_CLEAR 0x58
-#define MATRIX_CHANGESPLASH 0x40  // COL * ROW chars!
-#define MATRIX_AUTOWRAPLINE_ON 0x43
-#define MATRIX_AUTOWRAPLINE_OFF 0x44
-#define MATRIX_SETCURSOR_POSITION 0x47    // 2 args: col, row
-#define MATRIX_HOME 0x48
-#define MATRIX_MOVECURSOR_BACK 0x4C
-#define MATRIX_MOVECURSOR_FORWARD 0x4D
-#define MATRIX_UNDERLINECURSOR_ON 0x4A
-#define MATRIX_UNDERLINECURSOR_OFF 0x4B
-#define MATRIX_BLOCKCURSOR_ON 0x53
-#define MATRIX_BLOCKCURSOR_OFF 0x54
+  /******** text commands */
+  MATRIX_AUTOSCROLL_ON = 0x51,
+  MATRIX_AUTOSCROLL_OFF = 0x52,
+  MATRIX_CLEAR = 0x58,
+  MATRIX_CHANGESPLASH = 0x40, // COL * ROW chars!
+  MATRIX_AUTOWRAPLINE_ON = 0x43,
+  MATRIX_AUTOWRAPLINE_OFF = 0x44,
+  MATRIX_SETCURSOR_POSITION = 0x47, // 2 args: col, row
+  MATRIX_HOME = 0x48,
+  MATRIX_MOVECURSOR_BACK = 0x4C,
+  MATRIX_MOVECURSOR_FORWARD = 0x4D,
+  MATRIX_UNDERLINECURSOR_ON = 0x4A,
+  MATRIX_UNDERLINECURSOR_OFF = 0x4B,
+  MATRIX_BLOCKCURSOR_ON = 0x53,
+  MATRIX_BLOCKCURSOR_OFF = 0x54,
 
-/****** special chars */
-#define MATRIX_CUSTOM_CHARACTER 0x4E  // 9 args: char #, 8 bytes data
-#define MATRIX_SAVECUSTOMCHARBANK 0xC1  // 9 args: char #, 8 bytes data
-#define MATRIX_LOADCUSTOMCHARBANK 0xC0  // 9 args: char #, 8 bytes data
-/***** Numbers & Bargraphs */
-// not supported until we know what these look like
-//#define MATRIX_PLACEMEDIUMDIGIT 0x6F
-/***** display func */
-#define MATRIX_DISPLAY_ON  0x42    // backlight. 1 argument afterwards, in minutes
-#define MATRIX_DISPLAY_OFF  0x46
-#define MATRIX_SET_BRIGHTNESS 0x99 // 1 arg: scale
-#define MATRIX_SETSAVE_BRIGHTNESS 0x98 // 1 arg: scale
-#define MATRIX_SET_CONTRAST 0x50 // 1 arg
-#define MATRIX_SETSAVE_CONTRAST 0x91 // 1 arg
-/***** GPO commands */
-#define MATRIX_GPO_OFF 0x56
-#define MATRIX_GPO_ON 0x57
-#define MATRIX_GPO_START_ONOFF 0xC3
+  /****** special chars */
+  MATRIX_CUSTOM_CHARACTER = 0x4E, // 9 args: char #, 8 bytes data
+  MATRIX_SAVECUSTOMCHARBANK = 0xC1, // 9 args: char #, 8 bytes data
+  MATRIX_LOADCUSTOMCHARBANK = 0xC0, // 9 args: char #, 8 bytes data
+  /***** Numbers & Bargraphs */
+  // not supported until we know what these look like
+  //MATRIX_PLACEMEDIUMDIGIT = 0x6F,
+  /***** display func */
+  MATRIX_DISPLAY_ON  = 0x42, // backlight. 1 argument afterwards, in minutes
+  MATRIX_DISPLAY_OFF  = 0x46,
+  MATRIX_SET_BRIGHTNESS = 0x99, // 1 arg: scale
+  MATRIX_SETSAVE_BRIGHTNESS = 0x98, // 1 arg: scale
+  MATRIX_SET_CONTRAST = 0x50, // 1 arg
+  MATRIX_SETSAVE_CONTRAST = 0x91, // 1 arg
+  /***** GPO commands */
+  MATRIX_GPO_OFF = 0x56,
+  MATRIX_GPO_ON = 0x57,
+  MATRIX_GPO_START_ONOFF = 0xC3,
 
-/***** Extra Adafruit commands */
-#define EXTENDED_RGBBACKLIGHT 0xD0  // 3 args - R G B
-#define EXTENDED_SETSIZE 0xD1  // 2 args - Cols & Rows
-#define EXTENDED_TESTBAUD 0xD2  // zero args, prints baud rate to uart
+  /***** Extra Adafruit commands */
+  EXTENDED_RGBBACKLIGHT = 0xD0, // 3 args - R G B
+  EXTENDED_SETSIZE = 0xD1, // 2 args - Cols & Rows
+  EXTENDED_TESTBAUD = 0xD2, // zero args, prints baud rate to uart
 
+  EXTENDED_READ_GPI = 0xD3, // 1 arg, GPI pin
+  EXTENDED_SET_GPI = 0xD4, // 2 args: GPI pin, mode
+  EXTENDED_SETSAVE_GPI = 0xD5 // 2 args: GPI pin, mode
+};
 
 #define MATRIX_STARTL_COMMAND 0xFE
 //#define MATRIX_END_COMMAND 0x9A
@@ -122,7 +127,11 @@ uint8_t GPO[] = {GPO_1, GPO_2, GPO_3, GPO_4};
 #define GPO_2_START_ONOFF_ADDR 432
 #define GPO_3_START_ONOFF_ADDR 434
 #define GPO_4_START_ONOFF_ADDR 435
-#define LAST_ADDR 436
+#define GPO_1_START_MODE_ADDR 436
+#define GPO_2_START_MODE_ADDR 437
+#define GPO_3_START_MODE_ADDR 438
+#define GPO_4_START_MODE_ADDR 439
+#define LAST_ADDR 440
 #define EEPROM_END 511
 
 uint8_t COLS = EEPROM.read(COLS_ADDR);
@@ -175,11 +184,7 @@ void setup() {
 /*** test ****/
 
   for(uint8_t i=0; i<4; i++) {       // set all GPO to 'LOW' default
-   if (EEPROM.read(GPO_1_START_ONOFF_ADDR+i)) 
-     digitalWrite(GPO[i], HIGH);
-   else
-     digitalWrite(GPO[i], LOW);
-   pinMode(GPO[i], OUTPUT);
+    setupPin(i);
   }
   // for the initial 'blink' we want to use default settings:
   lcd.begin(16, 2);
@@ -506,7 +511,60 @@ void loop() {
        case EXTENDED_TESTBAUD:
          Uart.print(getBaud());
          break;
+    case EXTENDED_SET_GPI:
+      a = serialBlockingRead();
+      b = serialBlockingRead();
+      setGPI(a, b, LOW);
+      break;
+    case EXTENDED_SETSAVE_GPI:
+      a = serialBlockingRead();
+      b = serialBlockingRead();
+      setGPI(a, b, LOW);
+      saveGPI(a, b);
+      break;
+    case EXTENDED_READ_GPI:
+      a = serialBlockingRead();
+      printResult(EXTENDED_READ_GPI, a, digitalRead(GPO[a]));
+      break;
      }
+  }
+}
+
+void printResult(Command result, unsigned char r1, unsigned char r2)
+{
+  Serial.print(MATRIX_STARTL_COMMAND);
+  Serial.print((unsigned char)result);
+  Serial.print((unsigned char)r1);
+  Serial.print((unsigned char)r2);
+}
+
+void setupPin(unsigned char i)
+{
+  if(i >= 4) return;
+
+  uint8_t mode = EEPROM.read(GPO_1_START_MODE_ADDR+i);
+  uint8_t level = EEPROM.read(GPO_1_START_ONOFF_ADDR+i);
+  setGPI(i, mode, level);
+}
+
+void saveGPI(unsigned char pin, bool input)
+{
+  if(pin >= 4) return;
+  EEPROM.write(GPO_1_START_MODE_ADDR+pin, (unsigned char)input);
+}
+
+void setGPI(unsigned char i, bool input, uint8_t level)
+{
+  if(i >= 4) return;
+  if(input) {
+    digitalWrite(GPO[i], LOW);
+    pinMode(GPO[i], INPUT);
+  } else {
+    if (level) 
+      digitalWrite(GPO[i], HIGH);
+    else
+      digitalWrite(GPO[i], LOW);
+    pinMode(GPO[i], OUTPUT);
   }
 }
 
