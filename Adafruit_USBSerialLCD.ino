@@ -101,9 +101,10 @@ enum Command {
   EXTENDED_SETSIZE = 0xD1, // 2 args - Cols & Rows
   EXTENDED_TESTBAUD = 0xD2, // zero args, prints baud rate to uart
 
-  EXTENDED_READ_GPI = 0xD3, // 1 arg, GPI pin
-  EXTENDED_SET_GPI = 0xD4, // 2 args: GPI pin, mode
-  EXTENDED_SETSAVE_GPI = 0xD5 // 2 args: GPI pin, mode
+  EXTENDED_SET_GPI = 0xD3, // 2 args: GPI pin, mode
+  EXTENDED_SETSAVE_GPI = 0xD4, // 2 args: GPI pin, mode
+  EXTENDED_READ_GPI = 0xD5, // input: 1 arg, GPI pin; output: 2 args: pin, level
+  EXTENDED_GPI_CHANGED = 0xD6, // output: 2 args: GPI pin, pin level
 };
 
 #define MATRIX_STARTL_COMMAND 0xFE
@@ -254,6 +255,11 @@ void setup() {
 char displaybuff[20][4];
 
 void loop() {
+  processSerial();
+  processGPI();
+}
+
+void processSerial() {
   byte a, b, c;
   //parse command loop 
   
@@ -527,6 +533,25 @@ void loop() {
       printResult(EXTENDED_READ_GPI, a, digitalRead(GPO[a]));
       break;
      }
+  }
+}
+
+uint8_t gpi_values = 0;
+
+void processGPI()
+{
+  for(int i = 0; i < 4; i++) {
+    uint8_t level = digitalRead(GPO[i]);
+    uint8_t bit = 1 << i;
+    if(level != gpi_values & bit) {
+      if(level) {
+        gpi_values = gpi_values | bit;
+      } else {
+        gpi_values = gpi_values & ~bit;
+      }
+      
+      printResult(EXTENDED_GPI_CHANGED, i, level);
+    }
   }
 }
 
