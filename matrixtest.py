@@ -30,12 +30,12 @@ def matrixwritecommand(commandlist):
     #time.sleep(0.1);
     for i in range(0, len(commandlist)):
          #print chr(commandlist[i]),
-         ser.write(chr(commandlist[i]))
+         ser.write(chr(commandlist[i]).encode("latin-1"))
     #ser.write(bytearray(commandlist))
 
 # 1. get serial port
 if len(sys.argv) != 2:
-    print "Usage: python test.py <serialport>"
+    print("Usage: python test.py <serialport>")
     exit(0)
 
 '''
@@ -68,7 +68,7 @@ matrixwritecommand([0xD1, COLS, ROWS]);
 matrixwritecommand([0x58]) 
 
 # turn on display
-ser.write("Display on");
+ser.write(b"Display on");
 matrixwritecommand([0x42, 0]) 
 time.sleep(0.3);
 
@@ -100,18 +100,18 @@ matrixwritecommand([0x56, 4])
 time.sleep(0.1)
 
 # turn off display
-ser.write("off");
+ser.write(b"off");
 matrixwritecommand([0x46]) 
 time.sleep(0.3);
 
 # turn on display
-ser.write("on");
+ser.write(b"on");
 matrixwritecommand([0x42, 0]) 
 time.sleep(0.3);
 
 # create custom char
 matrixwritecommand([0x4E, 0, 0, 0xA, 0x15, 0x11, 0x11, 0xA, 0x4, 0]) 
-ser.write(chr(0))
+ser.write(chr(0).encode("latin-1"))
 time.sleep(0.5)
 
 # color loop
@@ -141,12 +141,12 @@ for i in range(0, 256):
 
 # home
 matrixwritecommand([0x48]) 
-ser.write("home");
+ser.write(b"home");
 time.sleep(0.5);
 
 #clear
 matrixwritecommand([0x58]) 
-ser.write("clear");
+ser.write(b"clear");
 time.sleep(0.5);
 
 matrixwritecommand([0x58]) 
@@ -160,14 +160,14 @@ matrixwritecommand([0xC1, 1, 5, 0x7,0x7,0x7,0x7,0x7,0x7,0x7,0x7])
 matrixwritecommand([0xC1, 1, 6, 0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3]) 
 matrixwritecommand([0xC1, 1, 7, 0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1]) 
 matrixwritecommand([0xC0, 1])  # load bank 1
-ser.write(chr(0))
-ser.write(chr(1))
-ser.write(chr(2))
-ser.write(chr(3))
-ser.write(chr(4))
-ser.write(chr(5))
-ser.write(chr(6))
-ser.write(chr(7))
+ser.write(chr(0).encode("latin-1"))
+ser.write(chr(1).encode("latin-1"))
+ser.write(chr(2).encode("latin-1"))
+ser.write(chr(3).encode("latin-1"))
+ser.write(chr(4).encode("latin-1"))
+ser.write(chr(5).encode("latin-1"))
+ser.write(chr(6).encode("latin-1"))
+ser.write(chr(7).encode("latin-1"))
 time.sleep(1)
 
 matrixwritecommand([0x58]) 
@@ -181,14 +181,14 @@ matrixwritecommand([0xC1, 2, 5, 0,0,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F])
 matrixwritecommand([0xC1, 2, 6, 0,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F])
 matrixwritecommand([0xC1, 2, 7, 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F])
 matrixwritecommand([0xC0, 2])
-ser.write(chr(0))
-ser.write(chr(1))
-ser.write(chr(2))
-ser.write(chr(3))
-ser.write(chr(4))
-ser.write(chr(5))
-ser.write(chr(6))
-ser.write(chr(7))
+ser.write(chr(0).encode("latin-1"))
+ser.write(chr(1).encode("latin-1"))
+ser.write(chr(2).encode("latin-1"))
+ser.write(chr(3).encode("latin-1"))
+ser.write(chr(4).encode("latin-1"))
+ser.write(chr(5).encode("latin-1"))
+ser.write(chr(6).encode("latin-1"))
+ser.write(chr(7).encode("latin-1"))
 time.sleep(1)
 
 
@@ -204,14 +204,14 @@ matrixwritecommand([0xC1, 3, 6, 0x1F,0x1F,0x03,0x03,0x03,0x03,0x1F,0x1F])
 
 matrixwritecommand([0xC1, 3, 7, 0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F])
 matrixwritecommand([0xC0, 3])
-ser.write(chr(0))
-ser.write(chr(1))
-ser.write(chr(2))
-ser.write(chr(3))
-ser.write(chr(4))
-ser.write(chr(5))
-ser.write(chr(6))
-ser.write(chr(7))
+ser.write(chr(0).encode("latin-1"))
+ser.write(chr(1).encode("latin-1"))
+ser.write(chr(2).encode("latin-1"))
+ser.write(chr(3).encode("latin-1"))
+ser.write(chr(4).encode("latin-1"))
+ser.write(chr(5).encode("latin-1"))
+ser.write(chr(6).encode("latin-1"))
+ser.write(chr(7).encode("latin-1"))
 time.sleep(1)
 
 matrixwritecommand([0x58])
@@ -226,37 +226,37 @@ time.sleep(1)
 matrixwritecommand([0x58]) 
 matrixwritecommand([0x51])
 if (ROWS == 4):
-    ser.write("Here is a long long long line of text   ");
+    ser.write(b"Here is a long long long line of text   ");
     time.sleep(1)
-    ser.write("Adding more text... ");
+    ser.write(b"Adding more text... ");
     time.sleep(1)
-    ser.write("even more text now!");
+    ser.write(b"even more text now!");
     time.sleep(1)
-    ser.write(" which will scroll");
+    ser.write(b" which will scroll");
 if (ROWS == 2):
-    ser.write("Here's some text");
+    ser.write(b"Here's some text");
     time.sleep(1)
-    ser.write("Add some more..");
+    ser.write(b"Add some more..");
     time.sleep(1)
-    ser.write(" which'll scroll");
+    ser.write(b" which'll scroll");
 time.sleep(1)
 
 # autoscroll off
 matrixwritecommand([0x58]) 
 matrixwritecommand([0x52]) 
-ser.write("long long long text that ends @ top left    ");
+ser.write(b"long long long text that ends @ top left    ");
 time.sleep(1);
 
 # cursor test
 matrixwritecommand([0x58]) 
 matrixwritecommand([0x47,1,1]) 
-ser.write('1');
+ser.write(b'1');
 matrixwritecommand([0x47,COLS,1]) 
-ser.write('2');
+ser.write(b'2');
 matrixwritecommand([0x47,1,ROWS]) 
-ser.write('3');
+ser.write(b'3');
 matrixwritecommand([0x47,COLS,ROWS]) 
-ser.write('4');
+ser.write(b'4');
 
 #underline cursor on
 matrixwritecommand([0x4A])
@@ -281,14 +281,14 @@ time.sleep(1);
 ser.close();
 ser = serial.Serial(sys.argv[1], 2400, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("2400")
+ser.write(b"2400")
 
 matrixwritecommand([0x39, 0xCF])
 time.sleep(1);
 ser.close();
 ser = serial.Serial(sys.argv[1], 4800, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("4800")
+ser.write(b"4800")
 
 matrixwritecommand([0x39, 0x67])
 time.sleep(1);
@@ -296,35 +296,35 @@ ser.close();
 ser.close();
 ser = serial.Serial(sys.argv[1], 9600, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("9600")
+ser.write(b"9600")
 
 matrixwritecommand([0x39, 0x33])
 time.sleep(1);
 ser.close();
 ser = serial.Serial(sys.argv[1], 19200, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("19200")
+ser.write(b"19200")
 
 matrixwritecommand([0x39, 0x22])
 time.sleep(1);
 ser.close();
 ser = serial.Serial(sys.argv[1], 28800, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("28800")
+ser.write(b"28800")
 
 matrixwritecommand([0x39, 0x19])
 time.sleep(1);
 ser.close();
 ser = serial.Serial(sys.argv[1], 38400, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("38400")
+ser.write(b"38400")
 
 matrixwritecommand([0x39, 0x10])
 time.sleep(1);
 ser.close();
 ser = serial.Serial(sys.argv[1], 57600, timeout=1)
 matrixwritecommand([0x58]) 
-ser.write("57600")
+ser.write(b"57600")
 
 # Revert back to 9600 baud
 matrixwritecommand([0x39, 0x67])
